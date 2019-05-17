@@ -8,4 +8,5 @@
  - 비교알고리즘 작성하였음
 
 서버 Part(담당자:황선기)
+ - Django rest framework 구성 설정
  - 서버 통신 호환 설정
