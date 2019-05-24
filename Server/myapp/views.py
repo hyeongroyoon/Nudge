@@ -1,50 +1,50 @@
 from rest_framework import viewsets
-from myapp.serializers import findSerializer, selectSerializer
-from myapp.models import MyappFood
+from myapp.serializers import Recommend, Final
+from myapp.models import Menu
 
 # 1차 추천 레시피 탐색
-class findViewSet(viewsets.ModelViewSet):
+class Recommend_recipes(viewsets.ModelViewSet):
     user_ingredient = ["우유", "달걀", "닭", "두부"]  # 사용자로 부터 입력 받은 재료 예시
 
-    cntnum = [0 for _ in range(999)]  # 사용자 재료와 DB재료의 매치 갯수
-    recipe_DB = MyappFood.objects.all()
+    recipe_DB = Menu.objects.all()
+    cntnum = [[0 for o in range(2)] for p in range(len(recipe_DB))]  # 사용자 재료와 DB재료의 매치 갯수
 
-    for i in range(0, 999):
-        cntnum[i] = 0
+    for i in range(0, len(recipe_DB)):
+        cntnum[i][1] = recipe_DB[i].mname
         for j in range(0, len(user_ingredient)):
-            comparing = recipe_DB[i].ingredients.find(user_ingredient[j])
+            comparing = recipe_DB[i].ingredient.find(user_ingredient[j])
             # find() 를 통해서 사용자의 재료가 DB 재료에 매칭 되는 지 확인(매칭되면 >=0, 매칭 되지 않으면 -1)
             if comparing >= 0:
-                cntnum[i] += 1  # 매칭 되었을 때 갯수 ++
+                cntnum[i][0] += 1  # 매칭 되었을 때 갯수 ++
 
     maxi = 0  # 최대 매칭 레시피를 찾기 위한 변수
 
-    for m in range(0, 999):  # 최대 매칭 레시피의 매칭 재료 개수 설정(maxi의 최신화)
-        if cntnum[m] > maxi:
-            maxi = cntnum[m]
+    for m in range(0, len(recipe_DB)):  # 최대 매칭 레시피의 매칭 재료 개수 설정(maxi의 최신화)
+        if cntnum[m][0] > maxi:
+            maxi = cntnum[m][0]
             # print(maxi)
 
-    for m in range(0, 999):
-        if cntnum[m] == maxi:
-            a = m
+    for m in range(0, len(recipe_DB)):
+        if cntnum[m][0] == maxi:
+            firstrecipe = cntnum[m][1]
             break
 
-    queryset = MyappFood.objects.filter(id=a+1) # 매칭 레시피 중 첫 번째 레시피만 일단 넣는다.
+    queryset = Menu.objects.filter(mname=firstrecipe) # 매칭 레시피 중 첫 번째 레시피만 일단 넣는다.
 
-    for m in range(0, 999):  # maxi에 해당하는 최대 매칭 레시피 모두 출력
-        if cntnum[m] == maxi:
-            if(m != a):
+    for m in range(0, len(recipe_DB)):  # maxi에 해당하는 최대 매칭 레시피 모두 출력
+        if cntnum[m][0] == maxi:
+            if(cntnum[m][1] != firstrecipe):
                 # 합 연산자를 통해 queryset에 매칭 레시피 병합
-                queryset |= MyappFood.objects.filter(id = m + 1)
+                queryset |= Menu.objects.filter(mname = cntnum[m][1])
 
-    serializer_class = findSerializer
+    serializer_class = Recommend
 
 
 # 2차 최종 레시피 출력
-class selectViewSet(viewsets.ModelViewSet):
+class Final_recipe(viewsets.ModelViewSet):
     user_choice = ["크림닭"] # 만약 사용자가 여러 레시피 중 크림닭을 선택했다면,
-    queryset = MyappFood.objects.filter(recipe_name = user_choice[0]) # filter함수를 통해 해당 쿼리셋만 받아옴
-    serializer_class = selectSerializer
+    queryset = Menu.objects.filter(mname = user_choice[0]) # filter함수를 통해 해당 쿼리셋만 받아옴
+    serializer_class = Final
 
 
 #이 코드는 view이다. 이 것을 단축한 코드가 위의 viewset이다.

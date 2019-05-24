@@ -4,8 +4,8 @@ from myapp import views
 
 router = routers.DefaultRouter()
 
-router.register(r'find-recipe', views.findViewSet)
-router.register(r'select-recipe', views.selectViewSet)
+router.register(r'recipes', views.Recommend_recipes)
+router.register(r'final-recipe', views.Final_recipe)
 
 urlpatterns = [
     url(r'^', include(router.urls)),

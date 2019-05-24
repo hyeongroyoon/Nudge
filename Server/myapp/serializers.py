@@ -1,14 +1,14 @@
-from myapp.models import MyappFood
+from myapp.models import Menu
 from rest_framework import serializers
 
 # 사용자의 재료에 따라 첫 번째로 추천 레시피들을 전달할 때 쓰는 serializer
-class findSerializer(serializers.HyperlinkedModelSerializer):
+class Recommend(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = MyappFood
-        fields = ('id', 'recipe_name')
+        model = Menu
+        fields = ('mname', 'dimage')
 
 # 사용자가 최종 선택한 레시피의 모든 정보를 전달 할 때 쓰는 serializer
-class selectSerializer(serializers.HyperlinkedModelSerializer):
+class Final(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = MyappFood
-        fields = ('recipe_name', 'ingredients', 'direction')
+        model = Menu
+        fields = ('mname', 'ingredient')
