@@ -193,3 +193,17 @@ class UserHasMenu(models.Model):
         managed = False
         db_table = 'user_has_menu'
         unique_together = (('user', 'menu_mname'),)
+
+
+
+class Dirview(models.Model):
+    recipe_menu = models.CharField(max_length= 50, db_column='recipe_menu', primary_key=True)
+    dirkey = models.IntegerField()
+    direction = models.CharField(max_length=170, blank=True, null=True)
+    imgkey = models.IntegerField()
+    dir_image = models.CharField(max_length=75, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'direction_image'
+        unique_together = (('recipe_menu', 'dirkey'),)

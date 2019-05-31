@@ -1,6 +1,6 @@
 import json
 from myapp.serializers import Recommend, Final
-from myapp.models import Menu
+from myapp.models import Menu, Dirview
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -17,13 +17,6 @@ class Recommend_recipes(APIView):
     @csrf_exempt
     def post(self, request, *args, **kwargs):
         if request.method == 'POST':
-            # received_json_data = json.loads(request.body)
-            # ingredient1 = received_json_data['Ingredient1']
-            # ingredient2 = received_json_data['Ingredient2']
-            # ingredient3 = received_json_data['Ingredient3']
-            # ingredient4 = received_json_data['Ingredient4']
-            # ingredient5 = received_json_data['Ingredient5']
-            # user_ingredient = [ingredient1, ingredient2, ingredient3, ingredient4, ingredient5]
             user_ingredient = list(request.data.values())
 
             recipe_DB = Menu.objects.all()
@@ -66,6 +59,9 @@ class Recommend_recipes(APIView):
                             # 합 연산자를 통해 queryset에 매칭 레시피 병합
                             queryset |= Menu.objects.filter(mname=cntnum[m][1])
 
+                            if(len(queryset) >= 20):
+                                break
+
                 serializer = Recommend(queryset, many=True)
                 return Response(serializer.data)
 
@@ -73,18 +69,33 @@ class Recommend_recipes(APIView):
 # 사용자가 최종 선택한 레시피 반환
 class Final_recipe(APIView):
 
-    def get(self, request, *args, **kwargs):
-        queryset = Menu.objects.all()
-        serializer = Final(queryset, many=True)
-        return Response(serializer.data)
-
     @csrf_exempt
     def post(self, request, *args, **kwargs):
         if request.method == 'POST':
-            # received_json_data = json.loads(request.body)
-            # choice = received_json_data['Choice']
             choice = list(request.data.values())
 
-            queryset = Menu.objects.filter(mname = choice[0]) # filter함수를 통해 해당 쿼리셋만 받아옴
+            queryset = Dirview.objects.filter(recipe_menu = choice[0]) # filter함수를 통해 해당 쿼리셋만 받아옴
+
             serializer = Final(queryset, many=True)
             return Response(serializer.data)
+
+
+
+# 사용자가 최종 선택한 레시피 반환
+# class Final_recipe(APIView):
+#
+#     def get(self, request, *args, **kwargs):
+#         queryset = Menu.objects.all()
+#         serializer = Final(queryset, many=True)
+#         return Response(serializer.data)
+#
+#     @csrf_exempt
+#     def post(self, request, *args, **kwargs):
+#         if request.method == 'POST':
+#             # received_json_data = json.loads(request.body)
+#             # choice = received_json_data['Choice']
+#             choice = list(request.data.values())
+#
+#             queryset = Menu.objects.filter(mname = choice[0]) # filter함수를 통해 해당 쿼리셋만 받아옴
+#             serializer = Final(queryset, many=True)
+#             return Response(serializer.data)
