@@ -9,7 +9,8 @@ Nudge(냉장고를 부탁해):fork_and_knife:
 2. 사업배경
 3. 사업소개
 4. 시스템 구성도
-5. System UI 
+5. 데이터베이스 
+6. System UI 
 ~~~
 
 :one:
