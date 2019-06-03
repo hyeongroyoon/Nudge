@@ -27,7 +27,7 @@ class Recommend_recipes(APIView):
     def post(self, request, *args, **kwargs):
         if request.method == 'POST':
             # ML model에 학습된 재료 중 주재료라고 판단한 것
-            main_ingredient = ['닭', '꽃게', '달걀', '인삼', '고등어', '바지락', '소고기', '돼지고기', '소시지', '새우', '햄', '두부', '참치', '골뱅이']
+            main_ingredient = ['닭', '꽃게', '달걀', '인삼', '소고기', '돼지고기', '소시지', '새우', '햄', '두부', '참치']
 
             user_ingredient = list(request.data.values())
             recipe_DB = Menu.objects.all()
