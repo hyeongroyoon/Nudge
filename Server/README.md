@@ -9,12 +9,10 @@ Django Rest Framework Ver 1.1
 앱과의 POST연동을 해야한다.
 
 
-
-Django Rest Framework Ver 2.0 (2019.05.30)
+Django Rest Framework Ver 2.0 (2019.05.30)_
 
 POST 연동 완료
 비교 알고리즘 개선 필요
-
 
 
 Django Rest Framework Ver 2.1 (2019.05.31)
@@ -28,3 +26,12 @@ Django Rest Framework Ver 2.1 (2019.05.31)
 (1. 주재료/부재료 구분)
 (2. 재료 비율에 따라 출력)
 (3. 최소 레시피 10개)
+
+
+Django Rest Framework Ver 2.2 (2019.06.03)
+
+오늘의 레시피 구현 완료
+주재료/부재료 구분 완료
+재료 비율에 따라 출력하기 완료
+레시피 이름에 사용자의 재료가 나타나 있으면 우선순위로 출력
+(직관성과 대표성 강화)
