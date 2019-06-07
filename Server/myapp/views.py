@@ -28,27 +28,40 @@ class Recommend_recipes(APIView):
         if request.method == 'POST':
             user_ingredient = list(request.data.values())
             recipe_DB = Menu.objects.all()
-            match_rate = [None] * len(recipe_DB) # 매칭 비율
-            cntnum = [[0 for o in range(2)] for p in range(len(recipe_DB))]  # 사용자 재료와 DB재료의 매치 갯수
+            main_rate = [None] * len(recipe_DB) # 주재료 매칭 비율
+            sub_rate = [None] * len(recipe_DB)  # 부재료 매칭 비율
+            cntnum0 = [[0 for o in range(2)] for p in range(len(recipe_DB))]  # 사용자 재료와 DB 재료의 매치 갯수
+            cntnum1 = [[0 for o in range(2)] for p in range(len(recipe_DB))]  # 사용자 재료와 DB 주재료의 매치 갯수
+            cntnum2 = [[0 for o in range(2)] for p in range(len(recipe_DB))]  # 사용자 재료와 DB 부재료의 매치 갯수
 
             # find 함수를 이용해서 몇 개의 재료가 매칭되는지 cntnum에 저장
             for i in range(0, len(recipe_DB)):
-                cntnum[i][1] = recipe_DB[i].mname
+                cntnum0[i][1] = recipe_DB[i].mname
+                cntnum1[i][1] = recipe_DB[i].mname
+                cntnum2[i][1] = recipe_DB[i].mname
 
                 for j in range(0, len(user_ingredient)):
-                    comparing = recipe_DB[i].main_ing.find(user_ingredient[j])
-                    if comparing >= 0:
-                        cntnum[i][0] += 1  # 주재료 매칭 되었을 때 가중치 +1
+                    comparing0 = recipe_DB[i].ingredient.find(user_ingredient[j])  # 재료 매칭 비교
+                    comparing1 = recipe_DB[i].main_ing.find(user_ingredient[j]) # 주재료 매칭 비교
+                    comparing2 = recipe_DB[i].sub_ing.find(user_ingredient[j]) # 부재료 매칭 비교
+                    if comparing0 >= 0:
+                        cntnum0[i][0] += 1  # 재료 매칭시 +1
+                    if comparing1 >= 0:
+                        cntnum1[i][0] += 1  # 주재료 매칭시 +1
+                    if comparing2 >= 0:
+                        cntnum2[i][0] += 1  # 부재료 매칭시 +1
 
-                each_ing = recipe_DB[i].main_ing.split(' ') # 쉼표 기준으로 구분하여 재료 갯수 파악
-                match_rate[i] = cntnum[i][0] / len(each_ing) # 주재료 매칭 비율 파악
+                each_ing1 = recipe_DB[i].main_ing.split(' ') # 주재료 갯수
+                each_ing2 = recipe_DB[i].sub_ing.split(' ')  # 부재료 갯수
+                main_rate[i] = cntnum1[i][0] / len(each_ing1) # 주재료 매칭 비율
+                sub_rate[i] = cntnum2[i][0] / len(each_ing2)  # 부재료 매칭 비율
 
 
             # maxi의 최신화 (cntnum 중 최대값으로)
             maxi = 0
             for m in range(0, len(recipe_DB)):
-                if cntnum[m][0] > maxi:
-                    maxi = cntnum[m][0]
+                if cntnum0[m][0] > maxi:
+                    maxi = cntnum0[m][0]
 
 
             # 매칭되는 재료가 하나도 없을 경우
@@ -58,24 +71,50 @@ class Recommend_recipes(APIView):
             else:
                 match_reci = [None] * 14
                 final_reci = [None] * 14
+
+                cnt = 0 # 최종 매칭 레시피 배열을 넣기 위한 카운트
+                bool = True # while문 탈출을 위한 불리언
+
+                while bool:
+                    mx = list() # 주재료 비율이 같은 레시피들의 인덱스 저장하는 리스트
+                    max_rate = max(main_rate)
+                    for i in range(0, len(main_rate)):
+                        if max_rate == main_rate[i]:
+                            mx.append(i) # 주재료 비율이 같으면 저장
+
+
+                    # 주재료 비율이 같은 레시피가 있다면
+                    if len(mx) > 1:
+                        for i in range(0, len(mx) - 1):
+                            # 부재료 비율에 따라 오름차순 정렬
+                            if sub_rate[mx[i]] >= sub_rate[mx[i + 1]]:
+                                temp = mx[i]
+                                mx[i] = mx[i + 1]
+                                mx[i + 1] = temp
+
+                        # 부재료 비율이 높은 순으로 매칭 레시피에 저장 (14개가 되면 break)
+                        for i in range(0, len(mx)):
+                            match_reci[cnt] = cntnum1[mx[len(mx)-1-i]][1]
+                            cnt += 1
+                            if cnt >= 14:
+                                bool = False
+                                break
+
+                        # 저장 하면 해당 주재료 비율을 -1로 맞추어 더 이상 max 함수에서 걸리지 않도록 수정
+                        for i in range(0, len(mx)):
+                            main_rate[mx[i]] = -1
+
+                    # 주재료 비율이 같은 레시피가 없다면
+                    else:
+                        Lindex = main_rate.index(max(main_rate))
+                        match_reci[cnt] = cntnum1[Lindex][1]
+                        cnt += 1
+                        if cnt >= 14:
+                            break
+                        main_rate[Lindex] = -1
+
+
                 number = 0
-
-                # 매칭 비율이 높은 순서대로 별도의 리스트에 저장
-                for m in range(0,len(match_reci)):
-                    Lindex = match_rate.index(max(match_rate))
-                    match_reci[m] = cntnum[Lindex][1]
-                    match_rate[Lindex] = -1
-                    if max(match_rate) == 0: # 더 이상 매칭되는 레시피가 없을 때 break
-                        break;
-
-                # 레시피 이름에 재료명이 포함되어 있으면 우선순위로 가져옴
-                for m in range(0, len(user_ingredient)):
-                    for n in range(0, len(match_reci)):
-                        if match_reci[n] is not None and match_reci[n].find(user_ingredient[m]) >= 0:
-                            final_reci[number] = match_reci[n]
-                            number += 1
-                            match_reci[n] = ''
-
                 # 정렬된 레시피를 final_reci 리스트로 최종 저장
                 for m in range(0, len(match_reci)):
                     if match_reci[m] != '':
