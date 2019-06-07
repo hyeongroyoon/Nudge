@@ -1,5 +1,5 @@
 from myapp.serializers import Recipe, Choice
-from myapp.models import Menu, Dirview
+from myapp.models import Menu, Direction
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import viewsets
 from rest_framework.views import APIView
@@ -26,9 +26,6 @@ class Recommend_recipes(APIView):
     @csrf_exempt
     def post(self, request, *args, **kwargs):
         if request.method == 'POST':
-            # ML model에 학습된 재료 중 주재료라고 판단한 것
-            main_ingredient = ['닭', '꽃게', '달걀', '인삼', '소고기', '돼지고기', '소시지', '새우', '햄','참치']
-
             user_ingredient = list(request.data.values())
             recipe_DB = Menu.objects.all()
             match_rate = [None] * len(recipe_DB) # 매칭 비율
@@ -39,14 +36,12 @@ class Recommend_recipes(APIView):
                 cntnum[i][1] = recipe_DB[i].mname
 
                 for j in range(0, len(user_ingredient)):
-                    comparing = recipe_DB[i].ingredient.find(user_ingredient[j])
+                    comparing = recipe_DB[i].main_ing.find(user_ingredient[j])
                     if comparing >= 0:
-                        cntnum[i][0] += 1  # 매칭 되었을 때 가중치 +1
-                        if user_ingredient[j] in main_ingredient:
-                            cntnum[i][0] += 5 # 주재료가 포함되었을 때 가중치 +5
+                        cntnum[i][0] += 1  # 주재료 매칭 되었을 때 가중치 +1
 
-                each_ing = recipe_DB[i].ingredient.split(',') # 쉼표 기준으로 구분하여 재료 갯수 파악
-                match_rate[i] = cntnum[i][0] / len(each_ing) # 재료 대비 매칭 비율 파악
+                each_ing = recipe_DB[i].main_ing.split(' ') # 쉼표 기준으로 구분하여 재료 갯수 파악
+                match_rate[i] = cntnum[i][0] / len(each_ing) # 주재료 매칭 비율 파악
 
 
             # maxi의 최신화 (cntnum 중 최대값으로)
@@ -114,7 +109,7 @@ class Choice_recipe(APIView):
             choice = list(request.data.values())
 
             # filter함수를 통해 해당 쿼리셋만 받아옴
-            queryset = Dirview.objects.filter(recipe_menu=choice[0])
+            queryset = Direction.objects.filter(recipe_menu=choice[0])
 
             # 선택 레시피의 조회수 +1
             Cntplus = Menu.objects.get(mname=choice[0])

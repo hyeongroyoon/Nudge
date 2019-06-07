@@ -74,26 +74,16 @@ class AuthUserUserPermissions(models.Model):
         unique_together = (('user', 'permission'),)
 
 
-class DirImage(models.Model):
-    recipe_menu = models.ForeignKey('Menu', models.DO_NOTHING, db_column='recipe_menu', primary_key=True)
-    imgkey = models.IntegerField()
+class Direction(models.Model):
+    id = models.IntegerField(primary_key=True)
+    recipe_menu = models.CharField(max_length=45)
+    dirkey = models.IntegerField()
+    direction = models.CharField(max_length=170, blank=True, null=True)
     dir_image = models.CharField(max_length=75, blank=True, null=True)
 
     class Meta:
         managed = False
-        db_table = 'dir_image'
-        unique_together = (('recipe_menu', 'imgkey'),)
-
-
-class Direction(models.Model):
-    recipe_menu = models.ForeignKey('Menu', models.DO_NOTHING, db_column='recipe_menu', primary_key=True)
-    dirkey = models.IntegerField()
-    direction = models.CharField(max_length=170, blank=True, null=True)
-
-    class Meta:
-        managed = False
         db_table = 'direction'
-        unique_together = (('recipe_menu', 'dirkey'),)
 
 
 class DjangoAdminLog(models.Model):
@@ -140,70 +130,16 @@ class DjangoSession(models.Model):
         db_table = 'django_session'
 
 
-class Market(models.Model):
-    name = models.CharField(primary_key=True, max_length=30)
-    url = models.CharField(max_length=75, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'market'
-
-
 class Menu(models.Model):
-    mname = models.CharField(primary_key=True, max_length=50)
+    id = models.IntegerField(primary_key=True)
+    mname = models.CharField(max_length=50)
     ingredient = models.CharField(max_length=500, blank=True, null=True)
+    main_ing = models.CharField(max_length=500, blank=True, null=True)
+    sub_ing = models.CharField(max_length=500, blank=True, null=True)
+    seasoning = models.CharField(max_length=500, blank=True, null=True)
     dimage = models.CharField(max_length=75, blank=True, null=True)
     count = models.IntegerField(blank=True, null=True)
 
     class Meta:
         managed = False
         db_table = 'menu'
-
-
-class MenuInfo(models.Model):
-    recipe_menu = models.ForeignKey(Menu, models.DO_NOTHING, db_column='recipe_menu', primary_key=True)
-    how_make = models.CharField(max_length=10, blank=True, null=True)
-    sort = models.CharField(max_length=10, blank=True, null=True)
-    calorie = models.IntegerField(blank=True, null=True)
-    carbohydrate = models.IntegerField(blank=True, null=True)
-    protein = models.IntegerField(blank=True, null=True)
-    fat = models.IntegerField(blank=True, null=True)
-    salt = models.IntegerField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'menu_info'
-
-
-class User(models.Model):
-    id = models.CharField(primary_key=True, max_length=20)
-    pw = models.CharField(max_length=45, blank=True, null=True)
-    name = models.CharField(max_length=45, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'user'
-
-
-class UserHasMenu(models.Model):
-    user = models.ForeignKey(User, models.DO_NOTHING, db_column='USER_id', primary_key=True)  # Field name made lowercase.
-    menu_mname = models.ForeignKey(Menu, models.DO_NOTHING, db_column='MENU_mname')  # Field name made lowercase.
-
-    class Meta:
-        managed = False
-        db_table = 'user_has_menu'
-        unique_together = (('user', 'menu_mname'),)
-
-
-
-class Dirview(models.Model):
-    recipe_menu = models.CharField(max_length= 50, db_column='recipe_menu', primary_key=True)
-    dirkey = models.IntegerField()
-    direction = models.CharField(max_length=170, blank=True, null=True)
-    imgkey = models.IntegerField()
-    dir_image = models.CharField(max_length=75, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'direction_image'
-        unique_together = (('recipe_menu', 'dirkey'),)
