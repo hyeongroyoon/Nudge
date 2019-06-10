@@ -9,8 +9,9 @@ Nudge(냉장고를 부탁해):fork_and_knife:
 2. 사업배경
 3. 사업소개
 4. 시스템 구성도
-5. 데이터베이스 
-6. System UI 
+5. 데이터베이스
+6. Comparing Logic Flow Chart
+7. System UI 
 ~~~
 
 :one:
@@ -51,7 +52,8 @@ Nudge(냉장고를 부탁해):fork_and_knife:
 
 
 :four: **System Architecture**
-![architecture](https://user-images.githubusercontent.com/49775240/58313386-647a6a00-7e48-11e9-9b02-d54c94d4f13b.png)
+![KakaoTalk_20190610_193422018](https://user-images.githubusercontent.com/49775240/59200402-177dee00-8bd3-11e9-8083-3c2f127cfc95.png)
+
 
 #
 #
@@ -62,7 +64,14 @@ Nudge(냉장고를 부탁해):fork_and_knife:
 #
 #
 
-:six: **System UI**
+
+:six:  **Comparing Logic Flow Chart**
+
+![KakaoTalk_20190610_205135810](https://user-images.githubusercontent.com/49775240/59200504-6035a700-8bd3-11e9-890c-937c86265bdf.png)
+
+#
+#
+:seven: **System UI**
 
 |**App Icon**:iphone:|**1. 오늘의 레시피 추천(첫화면)**|
 |:-------:|:-------:|
