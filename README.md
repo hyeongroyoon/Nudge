@@ -16,7 +16,9 @@ Nudge(냉장고를 부탁해):fork_and_knife:
 
 :one:
 **Nudge 팀원 구성 및 역할**
-
+![KakaoTalk_20190618_202727808](https://user-images.githubusercontent.com/49775240/59678921-8fb66600-9208-11e9-9c89-c627c63199f2.jpg)
+#
+#
 |이름|전공|담당|Email|
 |:-------:|:-------:|:------:|:--------:|
 |**윤형로**|국제금융|DB설계/github VCS |<dbsgudfh94@gmail.com>|
